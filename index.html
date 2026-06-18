@@ -74,7 +74,7 @@ button:hover{
 }
 
 .netbill{
-    background:#fff8b3;
+    background:#fff176;
     padding:15px;
     border-radius:8px;
     margin-top:15px;
@@ -247,10 +247,10 @@ const outlet = document.getElementById("outletType").value;
 
 let addExcise = 0;
 
-if(outlet==="hotel"){
+if(outlet === "hotel"){
     addExcise = sku.hotel;
 }
-else if(outlet==="restaurant"){
+else if(outlet === "restaurant"){
     addExcise = sku.rest;
 }
 else{
@@ -261,11 +261,17 @@ const wsp = sku.wsp * qty;
 const excise = sku.excise * qty;
 const additional = addExcise * qty;
 
-const subtotal = wsp + excise + additional;
-const vat = subtotal * 0.25;
-const total = subtotal + vat;
-const tcs = total * 0.02;
-const netBillAmount = total + tcs;
+const vat = (wsp + excise + additional) * 0.25;
+
+const total = wsp + excise + additional + vat;
+
+let tcs = 0;
+
+if(outlet !== "club"){
+    tcs = (total - additional) * 0.02;
+}
+
+const netBillAmount = total - tcs;
 
 document.getElementById("result").innerHTML = `
 
@@ -287,22 +293,17 @@ document.getElementById("result").innerHTML = `
 <hr>
 
 <div class="row">
-<span>Subtotal</span>
-<span>₹ ${subtotal.toFixed(2)}</span>
-</div>
-
-<div class="row">
 <span>VAT (25%)</span>
 <span>₹ ${vat.toFixed(2)}</span>
 </div>
 
 <div class="row">
-<span>Total After VAT</span>
+<span>Total</span>
 <span>₹ ${total.toFixed(2)}</span>
 </div>
 
 <div class="row">
-<span>TCS (2%)</span>
+<span>TCS</span>
 <span>₹ ${tcs.toFixed(2)}</span>
 </div>
 
@@ -312,6 +313,7 @@ NET BILL AMOUNT<br>
 </div>
 
 `;
+
 }
 
 </script>
