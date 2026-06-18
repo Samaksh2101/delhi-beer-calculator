@@ -16,38 +16,67 @@ padding:20px;
 }
 
 .container{
-max-width:700px;
+max-width:900px;
 margin:auto;
 background:white;
-padding:20px;
+padding:25px;
 border-radius:12px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
+box-shadow:0 0 15px rgba(0,0,0,0.1);
 }
 
 h1{
 text-align:center;
+margin-bottom:20px;
 }
 
-select,input,button{
+label{
+font-weight:bold;
+}
+
+select,input{
 width:100%;
 padding:12px;
-margin-top:10px;
+margin-top:8px;
+margin-bottom:15px;
 border-radius:8px;
 border:1px solid #ccc;
 }
 
 button{
+width:100%;
+padding:14px;
 background:#e30613;
 color:white;
+font-size:16px;
 font-weight:bold;
+border:none;
+border-radius:8px;
 cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
 }
 
 .result{
 margin-top:20px;
-padding:15px;
-background:#f8f8f8;
-border-radius:8px;
+padding:20px;
+background:#fafafa;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+.total{
+font-size:22px;
+font-weight:bold;
+color:#e30613;
+margin-top:15px;
 }
 
 </style>
@@ -71,97 +100,232 @@ border-radius:8px;
 
 <select id="product">
 
-<option value="3027.12">
-Budweiser 330ml
-</option>
+<option value="bud330">Budweiser 330ml</option>
+<option value="bud500">Budweiser 500ml</option>
+<option value="bud650">Budweiser 650ml</option>
 
-<option value="4475.52">
-Budweiser 500ml
-</option>
+<option value="mag330">Budweiser Magnum 330ml</option>
+<option value="mag500">Budweiser Magnum 500ml</option>
+<option value="mag650">Budweiser Magnum 650ml</option>
 
-<option value="1730.25">
-Budweiser 650ml
-</option>
+<option value="cor330">Corona 330ml</option>
+<option value="cor500">Corona 500ml</option>
 
-<option value="3245.28">
-Bud Magnum 330ml
-</option>
+<option value="hoe330">Hoegaarden 330ml</option>
+<option value="hoe500">Hoegaarden 500ml</option>
 
-<option value="4636.13">
-Bud Magnum 500ml
-</option>
-
-<option value="1878.29">
-Bud Magnum 650ml
-</option>
-
-<option value="3261.70">
-Corona 330ml
-</option>
-
-<option value="3954.38">
-Corona 500ml
-</option>
-
-<option value="3261.70">
-Hoegaarden 330ml
-</option>
-
-<option value="3954.38">
-Hoegaarden 500ml
-</option>
+<option value="budkeg">Budweiser Draught 30L</option>
+<option value="hoekeg">Hoegaarden Draught 30L</option>
 
 </select>
 
 <label>Cases</label>
-
-<input type="number" id="cases" value="1">
+<input type="number" id="qty" value="1" min="1">
 
 <button onclick="calculate()">
 Calculate
 </button>
 
 <div class="result" id="result">
-Enter details and click Calculate
+
+Enter quantity and click Calculate
+
 </div>
 
 </div>
 
 <script>
 
+const products = {
+
+bud330:{
+wsp:648.48,
+excise:1001.76,
+rest:194.54,
+club:194.54,
+hotel:291.84
+},
+
+bud500:{
+wsp:952.80,
+excise:1524.72,
+rest:285.84,
+club:190.56,
+hotel:285.84
+},
+
+bud650:{
+wsp:623.04,
+excise:982.20,
+rest:124.61,
+club:124.61,
+hotel:186.91
+},
+
+mag330:{
+wsp:704.16,
+excise:1131.12,
+rest:211.25,
+club:140.83,
+hotel:211.25
+},
+
+mag500:{
+wsp:989.76,
+excise:1579.44,
+rest:296.93,
+club:197.95,
+hotel:296.93
+},
+
+mag650:{
+wsp:678.84,
+excise:1063.68,
+rest:203.65,
+club:135.77,
+hotel:203.65
+},
+
+cor330:{
+wsp:1172.88,
+excise:1854.24,
+rest:351.86,
+club:234.58,
+hotel:351.86
+},
+
+cor500:{
+wsp:1429.92,
+excise:2238.48,
+rest:428.98,
+club:285.98,
+hotel:428.98
+},
+
+hoe330:{
+wsp:1172.88,
+excise:1854.24,
+rest:351.86,
+club:234.58,
+hotel:351.86
+},
+
+hoe500:{
+wsp:1429.92,
+excise:2238.48,
+rest:428.98,
+club:285.98,
+hotel:428.98
+},
+
+budkeg:{
+wsp:1952.22,
+excise:2931.78,
+rest:585.67,
+club:390.44,
+hotel:585.67
+},
+
+hoekeg:{
+wsp:3866.63,
+excise:5801.37,
+rest:1159.99,
+club:773.33,
+hotel:1159.99
+}
+
+};
+
 function calculate(){
 
-let price =
-parseFloat(document.getElementById("product").value);
+const sku =
+products[document.getElementById("product").value];
 
-let cases =
-parseInt(document.getElementById("cases").value);
+const qty =
+parseFloat(document.getElementById("qty").value);
 
-let netBill =
-price * cases;
+const outlet =
+document.getElementById("outletType").value;
 
-let vat =
-netBill * 0.25;
+let addExcise = 0;
 
-let subtotal =
-netBill + vat;
+if(outlet==="hotel"){
+addExcise = sku.hotel;
+}
+else if(outlet==="restaurant"){
+addExcise = sku.rest;
+}
+else{
+addExcise = sku.club;
+}
 
-let tcs =
-subtotal * 0.02;
+const wsp =
+sku.wsp * qty;
 
-let grandTotal =
-subtotal + tcs;
+const excise =
+sku.excise * qty;
 
-document.getElementById("result").innerHTML =
+const additional =
+addExcise * qty;
 
-`
-<b>Net Bill:</b> ₹${netBill.toFixed(2)}<br><br>
+const subtotal =
+wsp + excise + additional;
 
-<b>VAT (25%):</b> ₹${vat.toFixed(2)}<br><br>
+const vat =
+subtotal * 0.25;
 
-<b>TCS (2%):</b> ₹${tcs.toFixed(2)}<br><br>
+const total =
+subtotal + vat;
 
-<h2>Grand Total: ₹${grandTotal.toFixed(2)}</h2>
+const tcs =
+total * 0.02;
+
+const grand =
+total + tcs;
+
+document.getElementById("result").innerHTML = `
+
+<div class="row">
+<span>WSP</span>
+<span>₹ ${wsp.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Excise Duty</span>
+<span>₹ ${excise.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Additional Excise</span>
+<span>₹ ${additional.toFixed(2)}</span>
+</div>
+
+<hr>
+
+<div class="row">
+<span>Subtotal</span>
+<span>₹ ${subtotal.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>VAT (25%)</span>
+<span>₹ ${vat.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Total</span>
+<span>₹ ${total.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>TCS (2%)</span>
+<span>₹ ${tcs.toFixed(2)}</span>
+</div>
+
+<div class="total">
+Grand Total: ₹ ${grand.toFixed(2)}
+</div>
+
 `;
 
 }
