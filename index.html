@@ -43,6 +43,13 @@ border-radius:8px;
 box-sizing:border-box;
 }
 
+.entry-grid{
+display:grid;
+grid-template-columns:1fr 140px;
+gap:15px;
+align-items:end;
+}
+
 button{
 width:100%;
 padding:14px;
@@ -60,7 +67,20 @@ button:hover{
 opacity:0.9;
 }
 
-.result{
+.secondary-button{
+background:#222;
+}
+
+.remove-button{
+width:auto;
+margin:0;
+padding:8px 10px;
+border-radius:6px;
+background:#777;
+font-size:13px;
+}
+
+.result,.cart{
 margin-top:25px;
 padding:20px;
 background:#fafafa;
@@ -68,9 +88,43 @@ border:1px solid #ddd;
 border-radius:10px;
 }
 
+.cart h2{
+margin:0 0 15px;
+font-size:20px;
+color:#222;
+}
+
+.cart-item{
+display:grid;
+grid-template-columns:1fr auto auto;
+gap:12px;
+align-items:center;
+padding:12px 0;
+border-bottom:1px solid #e0e0e0;
+}
+
+.cart-item:last-child{
+border-bottom:none;
+}
+
+.item-name{
+font-weight:bold;
+}
+
+.item-total{
+min-width:115px;
+text-align:right;
+font-weight:bold;
+}
+
+.empty-cart{
+color:#666;
+}
+
 .row{
 display:flex;
 justify-content:space-between;
+gap:15px;
 margin-bottom:10px;
 }
 
@@ -88,6 +142,16 @@ hr{
 margin:15px 0;
 }
 
+@media(max-width:650px){
+.entry-grid,.cart-item{
+grid-template-columns:1fr;
+}
+
+.item-total{
+text-align:left;
+}
+}
+
 </style>
 </head>
 
@@ -99,12 +163,14 @@ margin:15px 0;
 
 <label>Outlet Type</label>
 
-<select id="outletType">
+<select id="outletType" onchange="renderCart()">
 <option value="hotel">Hotel</option>
 <option value="restaurant">Restaurant</option>
 <option value="club">Club</option>
 </select>
 
+<div class="entry-grid">
+<div>
 <label>Product</label>
 
 <select id="product">
@@ -127,21 +193,30 @@ margin:15px 0;
 <option value="hoekeg">Hoegaarden Draught 30L</option>
 
 </select>
+</div>
 
-<label>Quantity (Cases)</label>
-
+<div>
+<label>Quantity</label>
 <input
 type="number"
 id="qty"
 value="1"
-min="1">
+min="1"
+step="1">
+</div>
+</div>
 
-<button onclick="calculate()">
-Calculate Net Bill
+<button onclick="addItem()">
+Add SKU to Order
 </button>
 
+<div class="cart" id="cart">
+<h2>Running Cart</h2>
+<div class="empty-cart">No SKUs added yet.</div>
+</div>
+
 <div class="result" id="result">
-Enter quantity and click Calculate
+Add one or more SKUs to calculate the order.
 </div>
 
 </div>
@@ -151,6 +226,7 @@ Enter quantity and click Calculate
 const products = {
 
 bud650:{
+name:"Budweiser 650ml",
 wsp:623.04,
 excise:982.20,
 rest:124.61,
@@ -159,6 +235,7 @@ hotel:186.91
 },
 
 bud500:{
+name:"Budweiser 500ml",
 wsp:952.80,
 excise:1524.72,
 rest:190.56,
@@ -167,6 +244,7 @@ hotel:285.84
 },
 
 bud330:{
+name:"Budweiser 330ml",
 wsp:648.48,
 excise:1001.76,
 rest:129.70,
@@ -175,6 +253,7 @@ hotel:194.54
 },
 
 mag650:{
+name:"Budweiser Magnum 650ml",
 wsp:678.84,
 excise:1063.68,
 rest:135.77,
@@ -183,6 +262,7 @@ hotel:203.65
 },
 
 mag500:{
+name:"Budweiser Magnum 500ml",
 wsp:989.76,
 excise:1579.44,
 rest:197.95,
@@ -191,6 +271,7 @@ hotel:296.93
 },
 
 mag330:{
+name:"Budweiser Magnum 330ml",
 wsp:704.16,
 excise:1131.12,
 rest:140.83,
@@ -199,6 +280,7 @@ hotel:211.25
 },
 
 cor330:{
+name:"Corona 330ml",
 wsp:1172.88,
 excise:1854.24,
 rest:234.58,
@@ -207,6 +289,7 @@ hotel:351.86
 },
 
 cor500:{
+name:"Corona 500ml",
 wsp:1429.92,
 excise:2238.48,
 rest:285.98,
@@ -215,6 +298,7 @@ hotel:428.98
 },
 
 hoe330:{
+name:"Hoegaarden 330ml",
 wsp:1172.88,
 excise:1854.24,
 rest:234.58,
@@ -223,6 +307,7 @@ hotel:351.86
 },
 
 hoe500:{
+name:"Hoegaarden 500ml",
 wsp:1429.92,
 excise:2238.48,
 rest:285.98,
@@ -231,6 +316,7 @@ hotel:428.98
 },
 
 budkeg:{
+name:"Budweiser Draught 30L",
 wsp:1952.22,
 excise:2931.78,
 rest:390.44,
@@ -239,6 +325,7 @@ hotel:585.67
 },
 
 hoekeg:{
+name:"Hoegaarden Draught 30L",
 wsp:3866.63,
 excise:5801.37,
 rest:773.33,
@@ -248,106 +335,195 @@ hotel:1159.99
 
 };
 
-function calculate(){
+const cart = [];
+const rupeeFormatter = new Intl.NumberFormat("en-IN", {
+style:"currency",
+currency:"INR",
+maximumFractionDigits:2
+});
 
-const sku =
-products[document.getElementById("product").value];
+function money(value){
+return rupeeFormatter.format(value);
+}
 
-const qty =
-Number(document.getElementById("qty").value);
-
-const outlet =
-document.getElementById("outletType").value;
-
-let addRate = 0;
-
+function getAdditionalRate(sku,outlet){
 if(outlet === "hotel"){
-addRate = sku.hotel;
-}
-else if(outlet === "restaurant"){
-addRate = sku.rest;
-}
-else{
-addRate = sku.club;
+return sku.hotel;
 }
 
-const wsp =
-sku.wsp * qty;
+if(outlet === "restaurant"){
+return sku.rest;
+}
 
-const excise =
-sku.excise * qty;
+return sku.club;
+}
 
-const additional =
-addRate * qty;
+function calculateLine(item,outlet){
+const sku = products[item.productId];
+const wsp = sku.wsp * item.qty;
+const excise = sku.excise * item.qty;
+const additional = getAdditionalRate(sku,outlet) * item.qty;
 
-const vat =
-(wsp + excise + additional) * 0.25;
+return {
+wsp,
+excise,
+additional,
+taxable:wsp + excise + additional
+};
+}
 
-const total =
-wsp +
-excise +
-additional +
-vat;
+function calculateOrder(){
+const outlet = document.getElementById("outletType").value;
+const totals = {
+wsp:0,
+excise:0,
+additional:0,
+vat:0,
+total:0,
+tcs:0,
+grandTotal:0,
+netBillAmount:0
+};
 
-let tcs = 0;
+cart.forEach(item => {
+const line = calculateLine(item,outlet);
+totals.wsp += line.wsp;
+totals.excise += line.excise;
+totals.additional += line.additional;
+});
+
+totals.vat = (totals.wsp + totals.excise + totals.additional) * 0.25;
+totals.total = totals.wsp + totals.excise + totals.additional + totals.vat;
 
 if(outlet !== "club"){
-tcs =
-(total - additional) * 0.02;
+totals.tcs = (totals.total - totals.additional) * 0.02;
 }
 
-const grandTotal =
-total + tcs;
+totals.grandTotal = totals.total + totals.tcs;
+totals.netBillAmount = totals.grandTotal - totals.additional;
 
-const netBillAmount =
-grandTotal - additional;
+return totals;
+}
+
+function addItem(){
+const productId = document.getElementById("product").value;
+const qty = Number(document.getElementById("qty").value);
+
+if(!Number.isInteger(qty) || qty < 1){
+alert("Please enter a whole quantity of 1 or more.");
+return;
+}
+
+const existingItem = cart.find(item => item.productId === productId);
+
+if(existingItem){
+existingItem.qty += qty;
+}
+else{
+cart.push({
+productId,
+qty
+});
+}
+
+document.getElementById("qty").value = 1;
+renderCart();
+}
+
+function removeItem(index){
+cart.splice(index,1);
+renderCart();
+}
+
+function renderCart(){
+const cartEl = document.getElementById("cart");
+const resultEl = document.getElementById("result");
+const outlet = document.getElementById("outletType").value;
+
+if(cart.length === 0){
+cartEl.innerHTML = `
+<h2>Running Cart</h2>
+<div class="empty-cart">No SKUs added yet.</div>
+`;
+
+resultEl.innerHTML = "Add one or more SKUs to calculate the order.";
+return;
+}
+
+const cartItems = cart.map((item,index) => {
+const sku = products[item.productId];
+const line = calculateLine(item,outlet);
+const lineVat = line.taxable * 0.25;
+const lineTotal = line.taxable + lineVat;
+
+return `
+<div class="cart-item">
+<div>
+<div class="item-name">${sku.name} × ${item.qty}</div>
+<div>${money(lineTotal)}</div>
+</div>
+<div class="item-total">${money(lineTotal)}</div>
+<button class="remove-button" onclick="removeItem(${index})">Remove</button>
+</div>
+`;
+}).join("");
+
+cartEl.innerHTML = `
+<h2>Running Cart</h2>
+${cartItems}
+`;
+
+renderTotals();
+}
+
+function renderTotals(){
+const totals = calculateOrder();
 
 document.getElementById("result").innerHTML = `
 
 <div class="row">
 <span>WSP</span>
-<span>₹ ${wsp.toFixed(2)}</span>
+<span>${money(totals.wsp)}</span>
 </div>
 
 <div class="row">
 <span>Excise Duty</span>
-<span>₹ ${excise.toFixed(2)}</span>
+<span>${money(totals.excise)}</span>
 </div>
 
 <div class="row">
 <span>Additional Excise</span>
-<span>₹ ${additional.toFixed(2)}</span>
+<span>${money(totals.additional)}</span>
 </div>
 
 <hr>
 
 <div class="row">
 <span>VAT (25%)</span>
-<span>₹ ${vat.toFixed(2)}</span>
+<span>${money(totals.vat)}</span>
 </div>
 
 <div class="row">
-<span>Total</span>
-<span>₹ ${total.toFixed(2)}</span>
+<span>Total Order Value</span>
+<span>${money(totals.total)}</span>
 </div>
 
 <div class="row">
 <span>TCS</span>
-<span>₹ ${tcs.toFixed(2)}</span>
+<span>${money(totals.tcs)}</span>
 </div>
 
 <div class="row">
 <span>Grand Total</span>
-<span>₹ ${grandTotal.toFixed(2)}</span>
+<span>${money(totals.grandTotal)}</span>
 </div>
 
 <div class="netbill">
 NET BILL AMOUNT<br>
-₹ ${netBillAmount.toFixed(2)}
+${money(totals.netBillAmount)}
 </div>
 
 `;
-
 }
 
 </script>
