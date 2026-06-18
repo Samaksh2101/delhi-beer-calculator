@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anheuser-Busch InBev India Limited (AB InBev) Beer Order Calculator (DELHI)</title>
+<title>Delhi Beer Order Calculator</title>
 
 <style>
 
@@ -354,6 +354,51 @@ line-height:1.5;
 text-align:center;
 }
 
+.unique-visit-box{
+position:fixed;
+left:18px;
+bottom:18px;
+z-index:3;
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px 12px;
+border:1px solid rgba(231,222,216,0.9);
+border-radius:8px;
+background:rgba(255,255,255,0.92);
+box-shadow:0 10px 28px rgba(48,31,24,0.13);
+backdrop-filter:blur(10px);
+}
+
+.unique-visit-box span{
+display:block;
+color:var(--muted);
+font-size:10px;
+font-weight:bold;
+line-height:1;
+text-transform:uppercase;
+}
+
+.unique-visit-box strong{
+display:block;
+margin-top:3px;
+font-size:18px;
+line-height:1;
+}
+
+.unique-visit-mark{
+display:flex;
+align-items:center;
+justify-content:center;
+width:30px;
+height:30px;
+border-radius:8px;
+background:var(--amber-soft);
+color:#7a4d08;
+font-size:13px;
+font-weight:bold;
+}
+
 hr{
 border:none;
 border-top:1px solid var(--line);
@@ -402,12 +447,25 @@ justify-content:space-between;
 .item-total{
 text-align:left;
 }
+
+.unique-visit-box{
+left:12px;
+bottom:12px;
+}
 }
 
 </style>
 </head>
 
 <body>
+
+<div class="unique-visit-box" aria-label="Unique site visits">
+<div class="unique-visit-mark" aria-hidden="true">#</div>
+<div>
+<span>Unique Visits</span>
+<strong id="uniqueVisitCount">0</strong>
+</div>
+</div>
 
 <div class="side-logo left" aria-hidden="true">
 <img src="file:///D:/Abinbev/corona_logo.png" alt="">
@@ -425,7 +483,6 @@ text-align:left;
 </div>
 
 <section class="hero">
-<span class="eyebrow">Delhi excise order tool</span>
 <h1>Anheuser-Busch InBev India Limited (AB InBev) Beer Order Calculator (DELHI)</h1>
 <p>Build a mixed SKU order, review the running cart, and see the net bill amount update with outlet-specific duties, VAT, and TCS.</p>
 </section>
@@ -624,6 +681,8 @@ hotel:1159.99
 };
 
 const cart = [];
+const uniqueVisitTotalKey = "delhiBeerCalculatorUniqueVisits";
+const uniqueVisitorSeenKey = "delhiBeerCalculatorUniqueVisitorSeen";
 const rupeeFormatter = new Intl.NumberFormat("en-IN", {
 style:"currency",
 currency:"INR",
@@ -632,6 +691,19 @@ maximumFractionDigits:2
 
 function money(value){
 return rupeeFormatter.format(value);
+}
+
+function updateUniqueVisitCount(){
+let uniqueVisits = Number(localStorage.getItem(uniqueVisitTotalKey)) || 0;
+const visitorSeen = localStorage.getItem(uniqueVisitorSeenKey) === "yes";
+
+if(!visitorSeen){
+uniqueVisits += 1;
+localStorage.setItem(uniqueVisitTotalKey,uniqueVisits);
+localStorage.setItem(uniqueVisitorSeenKey,"yes");
+}
+
+document.getElementById("uniqueVisitCount").textContent = uniqueVisits.toLocaleString("en-IN");
 }
 
 function getAdditionalRate(sku,outlet){
@@ -819,6 +891,8 @@ ${money(totals.netBillAmount)}
 
 `;
 }
+
+updateUniqueVisitCount();
 
 </script>
 
