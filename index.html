@@ -1,84 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delhi Beer Order Calculator</title>
 
 <style>
-
 body{
-font-family:Arial,sans-serif;
-background:#f4f4f4;
-margin:0;
-padding:20px;
+    font-family: Arial, sans-serif;
+    background:#f4f4f4;
+    margin:0;
+    padding:20px;
 }
 
 .container{
-max-width:900px;
-margin:auto;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 0 15px rgba(0,0,0,0.1);
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
 }
 
 h1{
-text-align:center;
-margin-bottom:20px;
+    text-align:center;
+    color:#c8102e;
 }
 
 label{
-font-weight:bold;
+    font-weight:bold;
+    display:block;
+    margin-top:15px;
 }
 
 select,input{
-width:100%;
-padding:12px;
-margin-top:8px;
-margin-bottom:15px;
-border-radius:8px;
-border:1px solid #ccc;
+    width:100%;
+    padding:12px;
+    margin-top:6px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    box-sizing:border-box;
 }
 
 button{
-width:100%;
-padding:14px;
-background:#e30613;
-color:white;
-font-size:16px;
-font-weight:bold;
-border:none;
-border-radius:8px;
-cursor:pointer;
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border:none;
+    border-radius:8px;
+    background:#c8102e;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 button:hover{
-opacity:0.9;
+    opacity:0.9;
 }
 
 .result{
-margin-top:20px;
-padding:20px;
-background:#fafafa;
-border-radius:10px;
-border:1px solid #ddd;
+    margin-top:25px;
+    background:#fafafa;
+    border:1px solid #ddd;
+    border-radius:10px;
+    padding:20px;
 }
 
 .row{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
 }
 
-.total{
-font-size:22px;
-font-weight:bold;
-color:#e30613;
-margin-top:15px;
+.netbill{
+    background:#fff8b3;
+    padding:15px;
+    border-radius:8px;
+    margin-top:15px;
+    font-size:24px;
+    font-weight:bold;
+    text-align:center;
 }
 
+hr{
+    margin:15px 0;
+}
 </style>
 </head>
 
@@ -89,15 +96,13 @@ margin-top:15px;
 <h1>Delhi Beer Order Calculator</h1>
 
 <label>Outlet Type</label>
-
 <select id="outletType">
-<option value="hotel">Hotel</option>
-<option value="restaurant">Restaurant</option>
-<option value="club">Club</option>
+    <option value="hotel">Hotel</option>
+    <option value="restaurant">Restaurant</option>
+    <option value="club">Club</option>
 </select>
 
 <label>Product</label>
-
 <select id="product">
 
 <option value="bud330">Budweiser 330ml</option>
@@ -119,17 +124,15 @@ margin-top:15px;
 
 </select>
 
-<label>Cases</label>
+<label>Quantity (Cases)</label>
 <input type="number" id="qty" value="1" min="1">
 
 <button onclick="calculate()">
-Calculate
+Calculate Net Bill
 </button>
 
 <div class="result" id="result">
-
 Enter quantity and click Calculate
-
 </div>
 
 </div>
@@ -137,22 +140,6 @@ Enter quantity and click Calculate
 <script>
 
 const products = {
-
-bud330:{
-wsp:648.48,
-excise:1001.76,
-rest:194.54,
-club:194.54,
-hotel:291.84
-},
-
-bud500:{
-wsp:952.80,
-excise:1524.72,
-rest:285.84,
-club:190.56,
-hotel:285.84
-},
 
 bud650:{
 wsp:623.04,
@@ -162,34 +149,50 @@ club:124.61,
 hotel:186.91
 },
 
-mag330:{
-wsp:704.16,
-excise:1131.12,
-rest:211.25,
-club:140.83,
-hotel:211.25
+bud500:{
+wsp:952.80,
+excise:1524.72,
+rest:190.56,
+club:190.56,
+hotel:285.84
 },
 
-mag500:{
-wsp:989.76,
-excise:1579.44,
-rest:296.93,
-club:197.95,
-hotel:296.93
+bud330:{
+wsp:648.48,
+excise:1001.76,
+rest:129.70,
+club:129.70,
+hotel:194.54
 },
 
 mag650:{
 wsp:678.84,
 excise:1063.68,
-rest:203.65,
+rest:135.77,
 club:135.77,
 hotel:203.65
+},
+
+mag500:{
+wsp:989.76,
+excise:1579.44,
+rest:197.95,
+club:197.95,
+hotel:296.93
+},
+
+mag330:{
+wsp:704.16,
+excise:1131.12,
+rest:140.83,
+club:140.83,
+hotel:211.25
 },
 
 cor330:{
 wsp:1172.88,
 excise:1854.24,
-rest:351.86,
+rest:234.58,
 club:234.58,
 hotel:351.86
 },
@@ -197,7 +200,7 @@ hotel:351.86
 cor500:{
 wsp:1429.92,
 excise:2238.48,
-rest:428.98,
+rest:285.98,
 club:285.98,
 hotel:428.98
 },
@@ -205,7 +208,7 @@ hotel:428.98
 hoe330:{
 wsp:1172.88,
 excise:1854.24,
-rest:351.86,
+rest:234.58,
 club:234.58,
 hotel:351.86
 },
@@ -213,7 +216,7 @@ hotel:351.86
 hoe500:{
 wsp:1429.92,
 excise:2238.48,
-rest:428.98,
+rest:285.98,
 club:285.98,
 hotel:428.98
 },
@@ -221,7 +224,7 @@ hotel:428.98
 budkeg:{
 wsp:1952.22,
 excise:2931.78,
-rest:585.67,
+rest:390.44,
 club:390.44,
 hotel:585.67
 },
@@ -229,7 +232,7 @@ hotel:585.67
 hoekeg:{
 wsp:3866.63,
 excise:5801.37,
-rest:1159.99,
+rest:773.33,
 club:773.33,
 hotel:1159.99
 }
@@ -238,50 +241,31 @@ hotel:1159.99
 
 function calculate(){
 
-const sku =
-products[document.getElementById("product").value];
-
-const qty =
-parseFloat(document.getElementById("qty").value);
-
-const outlet =
-document.getElementById("outletType").value;
+const sku = products[document.getElementById("product").value];
+const qty = Number(document.getElementById("qty").value);
+const outlet = document.getElementById("outletType").value;
 
 let addExcise = 0;
 
 if(outlet==="hotel"){
-addExcise = sku.hotel;
+    addExcise = sku.hotel;
 }
 else if(outlet==="restaurant"){
-addExcise = sku.rest;
+    addExcise = sku.rest;
 }
 else{
-addExcise = sku.club;
+    addExcise = sku.club;
 }
 
-const wsp =
-sku.wsp * qty;
+const wsp = sku.wsp * qty;
+const excise = sku.excise * qty;
+const additional = addExcise * qty;
 
-const excise =
-sku.excise * qty;
-
-const additional =
-addExcise * qty;
-
-const subtotal =
-wsp + excise + additional;
-
-const vat =
-subtotal * 0.25;
-
-const total =
-subtotal + vat;
-
-const tcs =
-total * 0.02;
-
-const grand =
-total + tcs;
+const subtotal = wsp + excise + additional;
+const vat = subtotal * 0.25;
+const total = subtotal + vat;
+const tcs = total * 0.02;
+const netBillAmount = total + tcs;
 
 document.getElementById("result").innerHTML = `
 
@@ -313,7 +297,7 @@ document.getElementById("result").innerHTML = `
 </div>
 
 <div class="row">
-<span>Total</span>
+<span>Total After VAT</span>
 <span>₹ ${total.toFixed(2)}</span>
 </div>
 
@@ -322,12 +306,12 @@ document.getElementById("result").innerHTML = `
 <span>₹ ${tcs.toFixed(2)}</span>
 </div>
 
-<div class="total">
-Grand Total: ₹ ${grand.toFixed(2)}
+<div class="netbill">
+NET BILL AMOUNT<br>
+₹ ${netBillAmount.toFixed(2)}
 </div>
 
 `;
-
 }
 
 </script>
