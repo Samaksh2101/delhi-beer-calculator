@@ -1,10 +1,172 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Delhi Beer Calculator</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Delhi Beer Order Calculator</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+}
+
+select,input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+background:#e30613;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.result{
+margin-top:20px;
+padding:15px;
+background:#f8f8f8;
+border-radius:8px;
+}
+
+</style>
 </head>
+
 <body>
+
+<div class="container">
+
 <h1>Delhi Beer Order Calculator</h1>
-<p>Website is under development.</p>
+
+<label>Outlet Type</label>
+
+<select id="outletType">
+<option value="hotel">Hotel</option>
+<option value="restaurant">Restaurant</option>
+<option value="club">Club</option>
+</select>
+
+<label>Product</label>
+
+<select id="product">
+
+<option value="3027.12">
+Budweiser 330ml
+</option>
+
+<option value="4475.52">
+Budweiser 500ml
+</option>
+
+<option value="1730.25">
+Budweiser 650ml
+</option>
+
+<option value="3245.28">
+Bud Magnum 330ml
+</option>
+
+<option value="4636.13">
+Bud Magnum 500ml
+</option>
+
+<option value="1878.29">
+Bud Magnum 650ml
+</option>
+
+<option value="3261.70">
+Corona 330ml
+</option>
+
+<option value="3954.38">
+Corona 500ml
+</option>
+
+<option value="3261.70">
+Hoegaarden 330ml
+</option>
+
+<option value="3954.38">
+Hoegaarden 500ml
+</option>
+
+</select>
+
+<label>Cases</label>
+
+<input type="number" id="cases" value="1">
+
+<button onclick="calculate()">
+Calculate
+</button>
+
+<div class="result" id="result">
+Enter details and click Calculate
+</div>
+
+</div>
+
+<script>
+
+function calculate(){
+
+let price =
+parseFloat(document.getElementById("product").value);
+
+let cases =
+parseInt(document.getElementById("cases").value);
+
+let netBill =
+price * cases;
+
+let vat =
+netBill * 0.25;
+
+let subtotal =
+netBill + vat;
+
+let tcs =
+subtotal * 0.02;
+
+let grandTotal =
+subtotal + tcs;
+
+document.getElementById("result").innerHTML =
+
+`
+<b>Net Bill:</b> ₹${netBill.toFixed(2)}<br><br>
+
+<b>VAT (25%):</b> ₹${vat.toFixed(2)}<br><br>
+
+<b>TCS (2%):</b> ₹${tcs.toFixed(2)}<br><br>
+
+<h2>Grand Total: ₹${grandTotal.toFixed(2)}</h2>
+`;
+
+}
+
+</script>
+
 </body>
 </html>
