@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anheuser-Busch InBev India Limited (AB InBev) Beer Order Calculator (DELHI)</title>
+<title>Delhi Beer Order Calculator</title>
 
 <style>
 
@@ -34,52 +34,6 @@ color:var(--ink);
 margin:0;
 padding:28px;
 min-height:100vh;
-}
-
-.side-logo{
-position:fixed;
-top:50%;
-z-index:0;
-width:150px;
-padding:16px;
-border:1px solid rgba(231,222,216,0.85);
-border-radius:8px;
-background:rgba(255,255,255,0.84);
-box-shadow:0 14px 35px rgba(48,31,24,0.12);
-transform:translateY(-50%);
-backdrop-filter:blur(10px);
-}
-
-.side-logo.left{
-left:24px;
-}
-
-.side-logo.right{
-right:24px;
-}
-
-.side-logo img{
-display:block;
-width:100%;
-height:auto;
-object-fit:contain;
-}
-
-.mobile-logo-strip{
-display:none;
-grid-template-columns:1fr 1fr;
-gap:12px;
-margin-bottom:14px;
-}
-
-.mobile-logo-strip img{
-width:100%;
-height:58px;
-object-fit:contain;
-padding:10px;
-border:1px solid var(--line);
-border-radius:8px;
-background:white;
 }
 
 .container{
@@ -354,51 +308,6 @@ line-height:1.5;
 text-align:center;
 }
 
-.unique-visit-box{
-position:fixed;
-left:18px;
-bottom:18px;
-z-index:3;
-display:flex;
-align-items:center;
-gap:10px;
-padding:10px 12px;
-border:1px solid rgba(231,222,216,0.9);
-border-radius:8px;
-background:rgba(255,255,255,0.92);
-box-shadow:0 10px 28px rgba(48,31,24,0.13);
-backdrop-filter:blur(10px);
-}
-
-.unique-visit-box span{
-display:block;
-color:var(--muted);
-font-size:10px;
-font-weight:bold;
-line-height:1;
-text-transform:uppercase;
-}
-
-.unique-visit-box strong{
-display:block;
-margin-top:3px;
-font-size:18px;
-line-height:1;
-}
-
-.unique-visit-mark{
-display:flex;
-align-items:center;
-justify-content:center;
-width:30px;
-height:30px;
-border-radius:8px;
-background:var(--amber-soft);
-color:#7a4d08;
-font-size:13px;
-font-weight:bold;
-}
-
 hr{
 border:none;
 border-top:1px solid var(--line);
@@ -408,14 +317,6 @@ margin:8px 0;
 @media(max-width:850px){
 body{
 padding:14px;
-}
-
-.side-logo{
-display:none;
-}
-
-.mobile-logo-strip{
-display:grid;
 }
 
 .workspace{
@@ -448,10 +349,6 @@ justify-content:space-between;
 text-align:left;
 }
 
-.unique-visit-box{
-left:12px;
-bottom:12px;
-}
 }
 
 </style>
@@ -459,28 +356,7 @@ bottom:12px;
 
 <body>
 
-<div class="unique-visit-box" aria-label="Unique site visits">
-<div class="unique-visit-mark" aria-hidden="true">#</div>
-<div>
-<span>Unique Visits</span>
-<strong id="uniqueVisitCount">0</strong>
-</div>
-</div>
-
-<div class="side-logo left" aria-hidden="true">
-<img src="https://images.seeklogo.com/logo-png/3/1/corona-extra-logo-png_seeklogo-35601.png" alt="">
-</div>
-
-<div class="side-logo right" aria-hidden="true">
-<img src="file:///D:/Abinbev/Bud%20new%20logo-01.png" alt="">
-</div>
-
 <div class="container">
-
-<div class="mobile-logo-strip" aria-label="Brand logos">
-<img src="file:///D:/Abinbev/corona_logo.png" alt="Corona logo">
-<img src="file:///D:/Abinbev/Bud%20new%20logo-01.png" alt="Budweiser logo">
-</div>
 
 <section class="hero">
 <h1>Anheuser-Busch InBev India Limited (AB InBev) Beer Order Calculator (DELHI)</h1>
@@ -681,8 +557,6 @@ hotel:1159.99
 };
 
 const cart = [];
-const uniqueVisitTotalKey = "delhiBeerCalculatorUniqueVisits";
-const uniqueVisitorSeenKey = "delhiBeerCalculatorUniqueVisitorSeen";
 const rupeeFormatter = new Intl.NumberFormat("en-IN", {
 style:"currency",
 currency:"INR",
@@ -691,19 +565,6 @@ maximumFractionDigits:2
 
 function money(value){
 return rupeeFormatter.format(value);
-}
-
-function updateUniqueVisitCount(){
-let uniqueVisits = Number(localStorage.getItem(uniqueVisitTotalKey)) || 0;
-const visitorSeen = localStorage.getItem(uniqueVisitorSeenKey) === "yes";
-
-if(!visitorSeen){
-uniqueVisits += 1;
-localStorage.setItem(uniqueVisitTotalKey,uniqueVisits);
-localStorage.setItem(uniqueVisitorSeenKey,"yes");
-}
-
-document.getElementById("uniqueVisitCount").textContent = uniqueVisits.toLocaleString("en-IN");
 }
 
 function getAdditionalRate(sku,outlet){
@@ -891,8 +752,6 @@ ${money(totals.netBillAmount)}
 
 `;
 }
-
-updateUniqueVisitCount();
 
 </script>
 
