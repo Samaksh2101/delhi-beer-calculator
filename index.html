@@ -1,142 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Delhi Beer Order Calculator</title>
-
-<style>
-body{
-    font-family: Arial, sans-serif;
-    background:#f4f4f4;
-    margin:0;
-    padding:20px;
-}
-
-.container{
-    max-width:900px;
-    margin:auto;
-    background:#fff;
-    padding:25px;
-    border-radius:12px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
-}
-
-h1{
-    text-align:center;
-    color:#c8102e;
-}
-
-label{
-    font-weight:bold;
-    display:block;
-    margin-top:15px;
-}
-
-select,input{
-    width:100%;
-    padding:12px;
-    margin-top:6px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    box-sizing:border-box;
-}
-
-button{
-    width:100%;
-    padding:14px;
-    margin-top:20px;
-    border:none;
-    border-radius:8px;
-    background:#c8102e;
-    color:white;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-button:hover{
-    opacity:0.9;
-}
-
-.result{
-    margin-top:25px;
-    background:#fafafa;
-    border:1px solid #ddd;
-    border-radius:10px;
-    padding:20px;
-}
-
-.row{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:10px;
-}
-
-.netbill{
-    background:#fff176;
-    padding:15px;
-    border-radius:8px;
-    margin-top:15px;
-    font-size:24px;
-    font-weight:bold;
-    text-align:center;
-}
-
-hr{
-    margin:15px 0;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>Delhi Beer Order Calculator</h1>
-
-<label>Outlet Type</label>
-<select id="outletType">
-    <option value="hotel">Hotel</option>
-    <option value="restaurant">Restaurant</option>
-    <option value="club">Club</option>
-</select>
-
-<label>Product</label>
-<select id="product">
-
-<option value="bud330">Budweiser 330ml</option>
-<option value="bud500">Budweiser 500ml</option>
-<option value="bud650">Budweiser 650ml</option>
-
-<option value="mag330">Budweiser Magnum 330ml</option>
-<option value="mag500">Budweiser Magnum 500ml</option>
-<option value="mag650">Budweiser Magnum 650ml</option>
-
-<option value="cor330">Corona 330ml</option>
-<option value="cor500">Corona 500ml</option>
-
-<option value="hoe330">Hoegaarden 330ml</option>
-<option value="hoe500">Hoegaarden 500ml</option>
-
-<option value="budkeg">Budweiser Draught 30L</option>
-<option value="hoekeg">Hoegaarden Draught 30L</option>
-
-</select>
-
-<label>Quantity (Cases)</label>
-<input type="number" id="qty" value="1" min="1">
-
-<button onclick="calculate()">
-Calculate Net Bill
-</button>
-
-<div class="result" id="result">
-Enter quantity and click Calculate
-</div>
-
-</div>
-
 <script>
 
 const products = {
@@ -245,33 +106,40 @@ const sku = products[document.getElementById("product").value];
 const qty = Number(document.getElementById("qty").value);
 const outlet = document.getElementById("outletType").value;
 
-let addExcise = 0;
+let additionalRate = 0;
 
 if(outlet === "hotel"){
-    addExcise = sku.hotel;
+additionalRate = sku.hotel;
 }
 else if(outlet === "restaurant"){
-    addExcise = sku.rest;
+additionalRate = sku.rest;
 }
 else{
-    addExcise = sku.club;
+additionalRate = sku.club;
 }
 
 const wsp = sku.wsp * qty;
 const excise = sku.excise * qty;
-const additional = addExcise * qty;
+const additional = additionalRate * qty;
 
 const vat = (wsp + excise + additional) * 0.25;
 
-const total = wsp + excise + additional + vat;
+const total =
+wsp +
+excise +
+additional +
+vat;
 
 let tcs = 0;
 
 if(outlet !== "club"){
-    tcs = (total - additional) * 0.02;
+tcs = (total - additional) * 0.02;
 }
 
-const netBillAmount = total - tcs;
+const grandTotal = total + tcs;
+
+const netBillAmount =
+grandTotal - additional;
 
 document.getElementById("result").innerHTML = `
 
@@ -307,6 +175,11 @@ document.getElementById("result").innerHTML = `
 <span>₹ ${tcs.toFixed(2)}</span>
 </div>
 
+<div class="row">
+<span>Grand Total</span>
+<span>₹ ${grandTotal.toFixed(2)}</span>
+</div>
+
 <div class="netbill">
 NET BILL AMOUNT<br>
 ₹ ${netBillAmount.toFixed(2)}
@@ -317,6 +190,3 @@ NET BILL AMOUNT<br>
 }
 
 </script>
-
-</body>
-</html>
