@@ -3,44 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Anheuser Busch InBev India Limited Beer Order Calculator (DELHI)</title>
+<title>Delhi Beer Order Calculator</title>
 
 <style>
 
+:root{
+--ink:#211b19;
+--muted:#746965;
+--line:#e7ded8;
+--paper:#fffaf5;
+--panel:#ffffff;
+--brand:#b51622;
+--brand-dark:#80111a;
+--amber:#f2b84b;
+--amber-soft:#fff0c2;
+--green:#2f7d5c;
+--shadow:0 18px 45px rgba(48,31,24,0.14);
+}
+
+*{
+box-sizing:border-box;
+}
+
 body{
 font-family:Arial,sans-serif;
-background:#f4f4f4;
+background:
+linear-gradient(135deg,rgba(181,22,34,0.10),rgba(242,184,75,0.18)),
+#f7efe7;
+color:var(--ink);
 margin:0;
-padding:20px;
+padding:28px;
+min-height:100vh;
+}
+
+.side-logo{
+position:fixed;
+top:50%;
+z-index:0;
+width:150px;
+padding:16px;
+border:1px solid rgba(231,222,216,0.85);
+border-radius:8px;
+background:rgba(255,255,255,0.84);
+box-shadow:0 14px 35px rgba(48,31,24,0.12);
+transform:translateY(-50%);
+backdrop-filter:blur(10px);
+}
+
+.side-logo.left{
+left:24px;
+}
+
+.side-logo.right{
+right:24px;
+}
+
+.side-logo img{
+display:block;
+width:100%;
+height:auto;
+object-fit:contain;
+}
+
+.mobile-logo-strip{
+display:none;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-bottom:14px;
+}
+
+.mobile-logo-strip img{
+width:100%;
+height:58px;
+object-fit:contain;
+padding:10px;
+border:1px solid var(--line);
+border-radius:8px;
+background:white;
 }
 
 .container{
-max-width:900px;
+max-width:980px;
 margin:auto;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 0 15px rgba(0,0,0,0.1);
+position:relative;
+z-index:1;
+}
+
+.hero{
+background:
+linear-gradient(135deg,rgba(33,27,25,0.92),rgba(128,17,26,0.88)),
+url("https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=1600&q=80");
+background-size:cover;
+background-position:center;
+color:white;
+padding:30px;
+border-radius:8px 8px 0 0;
+box-shadow:var(--shadow);
+}
+
+.eyebrow{
+display:inline-block;
+padding:6px 10px;
+border:1px solid rgba(255,255,255,0.35);
+border-radius:999px;
+font-size:12px;
+font-weight:bold;
+letter-spacing:0;
+text-transform:uppercase;
 }
 
 h1{
-text-align:center;
-color:#d71920;
+margin:16px 0 8px;
+font-size:36px;
+line-height:1.1;
+}
+
+.hero p{
+max-width:620px;
+margin:0;
+color:rgba(255,255,255,0.82);
+font-size:15px;
+line-height:1.5;
+}
+
+.workspace{
+display:grid;
+grid-template-columns:minmax(0,1fr) 330px;
+gap:18px;
+align-items:start;
+background:rgba(255,250,245,0.82);
+border:1px solid rgba(231,222,216,0.75);
+border-top:none;
+padding:18px;
+border-radius:0 0 8px 8px;
+box-shadow:var(--shadow);
+}
+
+.order-panel,.summary-panel{
+background:var(--panel);
+border:1px solid var(--line);
+border-radius:8px;
+padding:20px;
+}
+
+.summary-panel{
+position:sticky;
+top:20px;
+}
+
+.section-title{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-bottom:16px;
+}
+
+.section-title h2{
+margin:0;
+font-size:18px;
+}
+
+.badge{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+min-width:30px;
+height:30px;
+padding:0 9px;
+border-radius:999px;
+background:var(--amber-soft);
+color:#7a4d08;
+font-weight:bold;
+font-size:13px;
 }
 
 label{
 font-weight:bold;
 display:block;
 margin-top:15px;
+font-size:13px;
+color:#3b312d;
 }
 
 select,input{
 width:100%;
-padding:12px;
-margin-top:6px;
-border:1px solid #ccc;
+padding:13px 12px;
+margin-top:7px;
+border:1px solid #d9cec7;
 border-radius:8px;
-box-sizing:border-box;
+background:#fff;
+color:var(--ink);
+font-size:15px;
+outline:none;
+}
+
+select:focus,input:focus{
+border-color:var(--brand);
+box-shadow:0 0 0 3px rgba(181,22,34,0.12);
 }
 
 .entry-grid{
@@ -56,95 +216,187 @@ padding:14px;
 margin-top:20px;
 border:none;
 border-radius:8px;
-background:#d71920;
+background:var(--brand);
 color:white;
-font-size:16px;
+font-size:15px;
 font-weight:bold;
 cursor:pointer;
+transition:transform 0.15s ease,background 0.15s ease,opacity 0.15s ease;
 }
 
 button:hover{
-opacity:0.9;
-}
-
-.secondary-button{
-background:#222;
+background:var(--brand-dark);
+transform:translateY(-1px);
 }
 
 .remove-button{
 width:auto;
 margin:0;
 padding:8px 10px;
-border-radius:6px;
-background:#777;
+border-radius:8px;
+background:#f2e9e2;
+color:#5d504b;
 font-size:13px;
 }
 
-.result,.cart{
-margin-top:25px;
-padding:20px;
-background:#fafafa;
-border:1px solid #ddd;
-border-radius:10px;
+.remove-button:hover{
+background:#eadbd1;
+color:#2a201d;
 }
 
-.cart h2{
-margin:0 0 15px;
-font-size:20px;
-color:#222;
+.cart{
+margin-top:20px;
+}
+
+.cart-list{
+display:grid;
+gap:10px;
 }
 
 .cart-item{
 display:grid;
-grid-template-columns:1fr auto auto;
+grid-template-columns:1fr auto;
 gap:12px;
 align-items:center;
-padding:12px 0;
-border-bottom:1px solid #e0e0e0;
+padding:14px;
+border:1px solid var(--line);
+border-radius:8px;
+background:#fffdfb;
 }
 
-.cart-item:last-child{
-border-bottom:none;
+.item-main{
+min-width:0;
 }
 
 .item-name{
 font-weight:bold;
+line-height:1.35;
+}
+
+.item-meta{
+margin-top:4px;
+color:var(--muted);
+font-size:13px;
+}
+
+.item-actions{
+display:flex;
+align-items:center;
+gap:12px;
 }
 
 .item-total{
-min-width:115px;
+min-width:112px;
 text-align:right;
 font-weight:bold;
+color:var(--green);
 }
 
 .empty-cart{
-color:#666;
+padding:22px;
+border:1px dashed #d8c9bf;
+border-radius:8px;
+background:#fffdfb;
+color:var(--muted);
+text-align:center;
+}
+
+.result{
+display:grid;
+gap:10px;
 }
 
 .row{
 display:flex;
 justify-content:space-between;
 gap:15px;
-margin-bottom:10px;
+padding:9px 0;
+border-bottom:1px solid #f0e7e1;
+font-size:14px;
+}
+
+.row:last-of-type{
+border-bottom:none;
+}
+
+.row span:last-child{
+font-weight:bold;
+text-align:right;
 }
 
 .netbill{
-background:#fff176;
-padding:15px;
+background:linear-gradient(135deg,#fff4bc,#ffd96f);
+border:1px solid #ecc65b;
+padding:18px;
 border-radius:8px;
-font-size:24px;
+font-size:28px;
 font-weight:bold;
 text-align:center;
-margin-top:15px;
+margin-top:12px;
+box-shadow:inset 0 1px 0 rgba(255,255,255,0.65);
+}
+
+.netbill small{
+display:block;
+font-size:12px;
+color:#6a4c0b;
+margin-bottom:6px;
+text-transform:uppercase;
+letter-spacing:0;
+}
+
+.placeholder{
+padding:20px;
+border-radius:8px;
+background:#fffdfb;
+color:var(--muted);
+line-height:1.5;
+text-align:center;
 }
 
 hr{
-margin:15px 0;
+border:none;
+border-top:1px solid var(--line);
+margin:8px 0;
 }
 
-@media(max-width:650px){
+@media(max-width:850px){
+body{
+padding:14px;
+}
+
+.side-logo{
+display:none;
+}
+
+.mobile-logo-strip{
+display:grid;
+}
+
+.workspace{
+grid-template-columns:1fr;
+}
+
+.summary-panel{
+position:static;
+}
+}
+
+@media(max-width:600px){
+.hero{
+padding:24px 20px;
+}
+
+h1{
+font-size:28px;
+}
+
 .entry-grid,.cart-item{
 grid-template-columns:1fr;
+}
+
+.item-actions{
+justify-content:space-between;
 }
 
 .item-total{
@@ -157,9 +409,35 @@ text-align:left;
 
 <body>
 
+<div class="side-logo left" aria-hidden="true">
+<img src="file:///D:/Abinbev/corona_logo.png" alt="">
+</div>
+
+<div class="side-logo right" aria-hidden="true">
+<img src="file:///D:/Abinbev/Bud%20new%20logo-01.png" alt="">
+</div>
+
 <div class="container">
 
-<h1>Anheuser Busch InBev India Limited Beer Order Calculator (DELHI)</h1>
+<div class="mobile-logo-strip" aria-label="Brand logos">
+<img src="file:///D:/Abinbev/corona_logo.png" alt="Corona logo">
+<img src="file:///D:/Abinbev/Bud%20new%20logo-01.png" alt="Budweiser logo">
+</div>
+
+<section class="hero">
+<span class="eyebrow">Delhi excise order tool</span>
+<h1>Delhi Beer Order Calculator</h1>
+<p>Build a mixed SKU order, review the running cart, and see the net bill amount update with outlet-specific duties, VAT, and TCS.</p>
+</section>
+
+<main class="workspace">
+
+<section class="order-panel">
+
+<div class="section-title">
+<h2>Order Details</h2>
+<span class="badge" id="cartCount">0</span>
+</div>
 
 <label>Outlet Type</label>
 
@@ -175,9 +453,9 @@ text-align:left;
 
 <select id="product">
 
-<option value="bud330">Budweiser Premium 330ml</option>
-<option value="bud500">Budweiser Premium 500ml</option>
-<option value="bud650">Budweiser Premium 650ml</option>
+<option value="bud330">Budweiser 330ml</option>
+<option value="bud500">Budweiser 500ml</option>
+<option value="bud650">Budweiser 650ml</option>
 
 <option value="mag330">Budweiser Magnum 330ml</option>
 <option value="mag500">Budweiser Magnum 500ml</option>
@@ -211,13 +489,23 @@ Add SKU to Order
 </button>
 
 <div class="cart" id="cart">
-<h2>Running Cart</h2>
 <div class="empty-cart">No SKUs added yet.</div>
 </div>
 
-<div class="result" id="result">
-Add one or more SKUs to calculate the order.
+</section>
+
+<aside class="summary-panel">
+<div class="section-title">
+<h2>Bill Summary</h2>
+<span class="badge">₹</span>
 </div>
+
+<div class="result" id="result">
+<div class="placeholder">Add one or more SKUs to calculate the order.</div>
+</div>
+</aside>
+
+</main>
 
 </div>
 
@@ -438,15 +726,18 @@ renderCart();
 function renderCart(){
 const cartEl = document.getElementById("cart");
 const resultEl = document.getElementById("result");
+const countEl = document.getElementById("cartCount");
 const outlet = document.getElementById("outletType").value;
+const itemCount = cart.reduce((total,item) => total + item.qty,0);
+
+countEl.textContent = itemCount;
 
 if(cart.length === 0){
 cartEl.innerHTML = `
-<h2>Running Cart</h2>
 <div class="empty-cart">No SKUs added yet.</div>
 `;
 
-resultEl.innerHTML = "Add one or more SKUs to calculate the order.";
+resultEl.innerHTML = `<div class="placeholder">Add one or more SKUs to calculate the order.</div>`;
 return;
 }
 
@@ -458,19 +749,22 @@ const lineTotal = line.taxable + lineVat;
 
 return `
 <div class="cart-item">
-<div>
+<div class="item-main">
 <div class="item-name">${sku.name} × ${item.qty}</div>
-<div>${money(lineTotal)}</div>
+<div class="item-meta">Line value before TCS: ${money(lineTotal)}</div>
 </div>
+<div class="item-actions">
 <div class="item-total">${money(lineTotal)}</div>
 <button class="remove-button" onclick="removeItem(${index})">Remove</button>
+</div>
 </div>
 `;
 }).join("");
 
 cartEl.innerHTML = `
-<h2>Running Cart</h2>
+<div class="cart-list">
 ${cartItems}
+</div>
 `;
 
 renderTotals();
@@ -519,7 +813,7 @@ document.getElementById("result").innerHTML = `
 </div>
 
 <div class="netbill">
-NET BILL AMOUNT<br>
+<small>Net Bill Amount</small>
 ${money(totals.netBillAmount)}
 </div>
 
