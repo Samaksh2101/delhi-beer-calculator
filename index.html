@@ -1,3 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delhi Beer Order Calculator</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+color:#d71920;
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-top:15px;
+}
+
+select,input{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:8px;
+box-sizing:border-box;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+border:none;
+border-radius:8px;
+background:#d71920;
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+.result{
+margin-top:25px;
+padding:20px;
+background:#fafafa;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+.netbill{
+background:#fff176;
+padding:15px;
+border-radius:8px;
+font-size:24px;
+font-weight:bold;
+text-align:center;
+margin-top:15px;
+}
+
+hr{
+margin:15px 0;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Delhi Beer Order Calculator</h1>
+
+<label>Outlet Type</label>
+
+<select id="outletType">
+<option value="hotel">Hotel</option>
+<option value="restaurant">Restaurant</option>
+<option value="club">Club</option>
+</select>
+
+<label>Product</label>
+
+<select id="product">
+
+<option value="bud330">Budweiser 330ml</option>
+<option value="bud500">Budweiser 500ml</option>
+<option value="bud650">Budweiser 650ml</option>
+
+<option value="mag330">Budweiser Magnum 330ml</option>
+<option value="mag500">Budweiser Magnum 500ml</option>
+<option value="mag650">Budweiser Magnum 650ml</option>
+
+<option value="cor330">Corona 330ml</option>
+<option value="cor500">Corona 500ml</option>
+
+<option value="hoe330">Hoegaarden 330ml</option>
+<option value="hoe500">Hoegaarden 500ml</option>
+
+<option value="budkeg">Budweiser Draught 30L</option>
+<option value="hoekeg">Hoegaarden Draught 30L</option>
+
+</select>
+
+<label>Quantity (Cases)</label>
+
+<input
+type="number"
+id="qty"
+value="1"
+min="1">
+
+<button onclick="calculate()">
+Calculate Net Bill
+</button>
+
+<div class="result" id="result">
+Enter quantity and click Calculate
+</div>
+
+</div>
+
 <script>
 
 const products = {
@@ -102,27 +250,38 @@ hotel:1159.99
 
 function calculate(){
 
-const sku = products[document.getElementById("product").value];
-const qty = Number(document.getElementById("qty").value);
-const outlet = document.getElementById("outletType").value;
+const sku =
+products[document.getElementById("product").value];
 
-let additionalRate = 0;
+const qty =
+Number(document.getElementById("qty").value);
+
+const outlet =
+document.getElementById("outletType").value;
+
+let addRate = 0;
 
 if(outlet === "hotel"){
-additionalRate = sku.hotel;
+addRate = sku.hotel;
 }
 else if(outlet === "restaurant"){
-additionalRate = sku.rest;
+addRate = sku.rest;
 }
 else{
-additionalRate = sku.club;
+addRate = sku.club;
 }
 
-const wsp = sku.wsp * qty;
-const excise = sku.excise * qty;
-const additional = additionalRate * qty;
+const wsp =
+sku.wsp * qty;
 
-const vat = (wsp + excise + additional) * 0.25;
+const excise =
+sku.excise * qty;
+
+const additional =
+addRate * qty;
+
+const vat =
+(wsp + excise + additional) * 0.25;
 
 const total =
 wsp +
@@ -133,10 +292,12 @@ vat;
 let tcs = 0;
 
 if(outlet !== "club"){
-tcs = (total - additional) * 0.02;
+tcs =
+(total - additional) * 0.02;
 }
 
-const grandTotal = total + tcs;
+const grandTotal =
+total + tcs;
 
 const netBillAmount =
 grandTotal - additional;
@@ -190,3 +351,6 @@ NET BILL AMOUNT<br>
 }
 
 </script>
+
+</body>
+</html>
